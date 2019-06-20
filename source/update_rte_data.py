@@ -1,4 +1,5 @@
 from get_rte_data import *
+import os
 import datetime
 
 """
@@ -28,15 +29,18 @@ df_tempo = json_to_pd_tempo(r_tempo)
 df_prod  = json_to_pd_prod(r_prod)
 
 #%% Sauvegarde des données
-
-# sauvegarde des données tempo :
-WD = '/home/admin/Documents/02-Recherche/01-Projets/2018-PEPER (nuage)/05-Donnees/RTE_DATA/'
-
 import os
 import pandas as pd
-os.chdir(WD)
 
-file_name_tempo = '/home/admin/Documents/02-Recherche/01-Projets/2018-PEPER (nuage)/05-Donnees/RTE_DATA/RTE_tempo_data'
+wd = os.path.dirname(os.path.abspath(__file__))
+os.chdir(wd)
+os.chdir('../data/')
+
+# sauvegarde des données tempo :
+WD = os.getcwd()
+file_name_tempo = os.path.join(WD, 'RTE_tempo_data')
+file_name_prod  = os.path.join(WD, 'RTE_prod_data')
+
 
 if os.path.isfile(file_name_tempo+'.csv'):
     from shutil import copyfile
@@ -64,8 +68,6 @@ else:
 
 
 # sauvegarde des données production :
-
-file_name_prod = '/home/admin/Documents/02-Recherche/01-Projets/2018-PEPER (nuage)/05-Donnees/RTE_DATA/RTE_prod_data'
 
 if os.path.isfile(file_name_prod+'.csv'):
     from shutil import copyfile
