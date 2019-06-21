@@ -1,7 +1,5 @@
 import urllib
 import requests
-from pyparsing import unicode_set
-
 
 def get_token(oauth_url='https://digital.iservices.rte-france.com/token/oauth/',
               client_id='7699170f-9898-40d0-b78a-354bae1f36e6',

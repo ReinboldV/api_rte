@@ -1,5 +1,4 @@
-from get_rte_data import *
-import os
+from api_rte.get_rte_data import *
 import datetime
 
 """
