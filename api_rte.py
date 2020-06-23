@@ -1,15 +1,24 @@
 import urllib
 import requests
 
+
 def get_token(oauth_url='https://digital.iservices.rte-france.com/token/oauth/',
               client_id='7699170f-9898-40d0-b78a-354bae1f36e6',
               client_secret='969de489-1dca-4158-8ad4-9e1ab405cfeb'):
+    """
 
+    :param oauth_url:
+    :param client_id:
+    :param client_secret:
+    :return: [token_type, access_token]
+    """
     r = requests.post(oauth_url, auth=(client_id, client_secret))
-    acess_token = r.json()['access_token']
+    print(r)
+    access_token = r.json()['access_token']
     token_type = r.json()['token_type']
 
-    return token_type, acess_token
+    return token_type, access_token
+
 
 def get_tempo(start_date, end_date, token_type, acess_token, url_tempo='https://digital.iservices.rte-france.com/open_api/tempo_like_supply_contract/v1/tempo_like_calendars'):
     """
@@ -35,7 +44,7 @@ def get_tempo(start_date, end_date, token_type, acess_token, url_tempo='https://
 
 
 def get_production(start_date, end_date, token_type, acess_token,
-                   url_tempo='https://digital.iservices.rte-france.com/open_api/generation_forecast/v2/forecasts'):
+                   url_prod='https://digital.iservices.rte-france.com/open_api/generation_forecast/v2/forecasts'):
 
     """
 
@@ -45,7 +54,7 @@ def get_production(start_date, end_date, token_type, acess_token,
     :param acess_token: Token code access
     :param production_type: None (default), AGGREGATED_FRANCE, WIND, SOLAR, AGGREGATED_CPC, MDSE
     :param type:
-    :param url_tempo:
+    :param url_prod:
     :return:
     """
 
@@ -53,7 +62,7 @@ def get_production(start_date, end_date, token_type, acess_token,
     end_str = end_date.strftime('%Y-%m-%dT%H:%M:%S+02:00')
 
     param = {'start_date': start_str, 'end_date': end_str}
-    url  = url_tempo+'?' + urllib.parse.urlencode(param).replace("%3A", ":").replace('%2C', ',')
+    url  = url_prod + '?' + urllib.parse.urlencode(param).replace("%3A", ":").replace('%2C', ',')
     r = requests.get(url, headers={'Authorization': f'{token_type} {acess_token}'}, params=param)
 
     return r.json()

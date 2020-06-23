@@ -2,11 +2,11 @@ from setuptools import setup
 
 setup(
     name='api_rte',
-    version=0.1,
+    version=1.1,
     description='Library RTE API',
     author='Vincent Reinbold',
-    author_email='vincent.reinbold@centralesupelec.fr',
+    author_email='vincent.reinbold@geeps.centralesupelec.fr',
     license='GNU GENERAL PUBLIC LICENSE v3',
-    packages=['api_rte', 'data'],
-    classifiers=["Programming Language :: Python :: 3.6"], install_requires=['requests']
+    packages=['api_rte'],
+    classifiers=["Programming Language :: Python :: 3.7"], install_requires=['requests', 'urllib3']
 )

@@ -10,8 +10,8 @@ Procedure to follow :
 Create an application for web server and start associating API to this application. Note that you won't have access to API if note associated with you application. 
 In the application tab, one will find the `client id` and the related `client secret` code needed for requesting data. 
 
-        client_id     = '7699170f-9898-40d0-b78a-XXXXXXXXXXXX'
-        client_secret = '969de489-1dca-4158-8ad4-XXXXXXXXXXXX'
+        CLIENT_ID     = '7699170f-9898-40d0-b78a-XXXXXXXXXXXX'
+        CLIENT_SECRET = '969de489-1dca-4158-8ad4-XXXXXXXXXXXX'
     
     The first request to the server must be to requiere a token, i.e. an access to the API. 
 
