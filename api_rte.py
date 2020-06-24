@@ -1,10 +1,13 @@
 import urllib
 import requests
+import pandas as pd
+
+from api_config import *
 
 
-def get_token(oauth_url='https://digital.iservices.rte-france.com/token/oauth/',
-              client_id='7699170f-9898-40d0-b78a-354bae1f36e6',
-              client_secret='969de489-1dca-4158-8ad4-9e1ab405cfeb'):
+def get_token(oauth_url=OAUTH_URL,
+              client_id=CLIENT_ID,
+              client_secret=CLIENT_SECRET):
     """
 
     :param oauth_url:
@@ -12,21 +15,75 @@ def get_token(oauth_url='https://digital.iservices.rte-france.com/token/oauth/',
     :param client_secret:
     :return: [token_type, access_token]
     """
+
     r = requests.post(oauth_url, auth=(client_id, client_secret))
-    print(r)
-    access_token = r.json()['access_token']
-    token_type = r.json()['token_type']
+    if r.ok:
+        access_token = r.json()['access_token']
+        token_type = r.json()['token_type']
+    else:
+        Warning("Authentication failed")
+        access_token = None
+        token_type = None
 
     return token_type, access_token
 
 
-def get_tempo(start_date, end_date, token_type, acess_token, url_tempo='https://digital.iservices.rte-france.com/open_api/tempo_like_supply_contract/v1/tempo_like_calendars'):
+def get_tempo(start_date, end_date,
+              oauth_url=OAUTH_URL,
+              client_id=CLIENT_ID,
+              client_secret=CLIENT_SECRET,
+              url_tempo=URL_TEMPO):
     """
+
+    :param client_secret:
+    :param client_id:
+    :param oauth_url:
+    :param start_date:
+    :param end_date:
+    :param url_tempo:
+    :return:
+    """
+
+    token_type, access_token = get_token(oauth_url=oauth_url, client_id=client_id, client_secret=client_secret)
+    r_json = get_tempo_json(start_date, end_date, token_type, access_token, url_tempo=url_tempo)
+    df = json_to_pd_tempo(r_json)
+
+    return df
+
+
+def get_prod(start_date, end_date, production_type=None, type=None,
+             oauth_url=OAUTH_URL,
+             client_id=CLIENT_ID,
+             client_secret=CLIENT_SECRET,
+             url_prod=URL_PROD):
+    """ General method to download RTE forecasts production
 
     :param start_date:
     :param end_date:
+    :param production_type:
+    :param type:
+    :param oauth_url:
+    :param client_id:
+    :param client_secret:
+    :param url_prod:
+    :return:
+    """
+    token_type, access_token = get_token(oauth_url=oauth_url, client_id=client_id,
+                                         client_secret=client_secret)
+    res_json = get_production_json(start_date, end_date, token_type, access_token,
+                                   production_type=production_type, type=type, url_prod=url_prod)
+
+    res = parse_production(res_json)
+    return res
+
+
+def get_tempo_json(start_date, end_date, token_type, access_token, url_tempo=URL_TEMPO):
+    """
+
+    :param access_token:
+    :param start_date:
+    :param end_date:
     :param token_type:
-    :param acess_token:
     :param url_tempo:
     :return:
     """
@@ -38,64 +95,118 @@ def get_tempo(start_date, end_date, token_type, acess_token, url_tempo='https://
     url_tempo = url_tempo
     url_tempo += '?' + urllib.parse.urlencode(param).replace("%3A", ":")
 
-    r = requests.get(url_tempo, headers={'Authorization': f'{token_type} {acess_token}'}, params=param)
+    r = requests.get(url_tempo, headers={'Authorization': f'{token_type} {access_token}'}, params=param)
 
-    return r
+    return r.json()
 
 
-def get_production(start_date, end_date, token_type, acess_token,
-                   url_prod='https://digital.iservices.rte-france.com/open_api/generation_forecast/v2/forecasts'):
-
+def get_production_json(start_date, end_date, token_type,
+                        access_token, production_type=None, type=None, url_prod=URL_PROD):
     """
 
+    :param str type:
+    :param str production_type:
     :param start_date: starting date of format %Y-%m-%dT%H:%M:%S  (Local French Time)
     :param end_date: end date of format %Y-%m-%dT%H:%M:%S  (Local French Time)
     :param token_type: Bearer
-    :param acess_token: Token code access
-    :param production_type: None (default), AGGREGATED_FRANCE, WIND, SOLAR, AGGREGATED_CPC, MDSE
-    :param type:
-    :param url_prod:
-    :return:
+    :param access_token: Token access code
+    :param str url_prod: url of the rte production forecasts api (default in api_config.py)
+    :return: json forecasts
     """
 
     start_str = start_date.strftime('%Y-%m-%dT%H:%M:%S+02:00')
     end_str = end_date.strftime('%Y-%m-%dT%H:%M:%S+02:00')
 
     param = {'start_date': start_str, 'end_date': end_str}
-    url  = url_prod + '?' + urllib.parse.urlencode(param).replace("%3A", ":").replace('%2C', ',')
-    r = requests.get(url, headers={'Authorization': f'{token_type} {acess_token}'}, params=param)
+    if production_type is not None:
+        if production_type in PRODUCTION_TYPE:
+            param.update({'production_type': production_type})
+        elif production_type is None:
+            pass
+        else:
+            raise ValueError(f'The given production_type={production_type} does not exist in PRODUCTION_TYPE.')
+        if type in TYPE:
+            param.update({'type': type})
+        elif type is None:
+            pass
+        else:
+            raise ValueError(f'The given type={type} does not exist in TYPE.')
 
-    return r.json()
+    url = url_prod + '?' + urllib.parse.urlencode(param).replace("%3A", ":").replace('%2C', ',')
+    r_json = requests.get(url, headers={'Authorization': f'{token_type} {access_token}'}, params=param)
+
+    if not r_json.ok:
+        str = f'The request return an error. Status code : {r_json.status_code}, reason : {r_json.reason}. ' \
+              f'\n\n {r_json.content}'
+
+        raise ImportError(str)
+
+    return r_json.json()
+
+
+def _parse_json_values(values):
+    """ Convert RTE data data from dictionnry form to pandas DataFrame.
+
+    :param values:
+    :return: pandas.DataFrame
+    """
+    df = pd.DataFrame.from_dict(values)
+    df.index = df.start_date
+    df.start_date = pd.to_datetime(df.start_date, format='%Y-%m-%d %H:%M:%S', utc=True)
+    df.index = pd.to_datetime(df.index, format='%Y-%m-%d %H:%M:%S', utc=True)
+    df.updated_date = pd.to_datetime(df.updated_date, format='%Y-%m-%d %H:%M:%S', utc=True)
+    df.end_date = pd.to_datetime(df.end_date, format='%Y-%m-%d %H:%M:%S', utc=True)
+
+    return df
 
 
 def json_to_pd_tempo(r_tempo):
+    """ Convert Tempo RTE data from json to pandas data frame
 
-    import pandas as pd
+    :param r_tempo:
+    :return: pandas.DataFrame
+    """
+    values_dict = r_tempo.json().get('tempo_like_calendars').get('values')
+    df = _parse_json_values(values_dict)
+    return df
 
-    list = r_tempo.json().get('tempo_like_calendars').get('values')
 
-    start  = []
-    end    = []
-    value  = []
-    update = []
+def parse_production(r):
+    """
+    Convert Production forecasts RTE data from json to a list of data frames
 
-    for d in list:
-        start.append(d['start_date'])
-        end.append(d['end_date'])
-        value.append(d['value'])
-        update.append(d['updated_date'])
+    :param r:json results of rte production api
+    """
+    d = []
 
-    df_tempo        = pd.DataFrame({'start_date'   : start, 'end_date' : end,
-                                    'updated_date' : update, 'value'   : value}, index=start)
-    df_tempo.start_date   = pd.to_datetime(df_tempo.start_date,     format='%Y-%m-%d %H:%M:%S', utc=True)
-    df_tempo.index        = pd.to_datetime(df_tempo.index,          format='%Y-%m-%d %H:%M:%S', utc=True)
-    df_tempo.end_date     = pd.to_datetime(df_tempo.end_date,       format='%Y-%m-%d %H:%M:%S', utc=True)
-    df_tempo.updated_date = pd.to_datetime(df_tempo.updated_date,   format='%Y-%m-%d %H:%M:%S', utc=True)
+    for i in range(len(r.get('forecasts'))):
 
-    return df_tempo
+        d.append({})
+        forecast = r.get('forecasts')[i]
+
+        d[i]['production_type'] = forecast['production_type']
+        d[i]['type'] = forecast['type']
+
+        if 'sub_type' in forecast:
+            d[i]['sub_type'] = forecast['sub_type']
+
+        df = _parse_json_values(forecast['values'])
+        d[i]['values'] = df
+    return d
 
 
 def json_to_pd_prod(r_prod):
+    """
+    DEPRECIATED
+
+    Parsing Production RTE data from json to pandas data frame
+
+    :param r_prod:
+    :return: pandas.DataFrame
+    """
+
+    Warning("json_to_pd_prod() is depreciated and will not be integrated in version 1.2 ")
+
     import pandas as pd
 
     colname = []
@@ -145,3 +256,15 @@ def json_to_pd_prod(r_prod):
     df2.drop('start_date', axis=1, inplace=True)
 
     return df2
+
+
+if __name__ == '__main__':
+    from api_rte import *
+    from api_config import *
+    import datetime
+
+    token_type, token = get_token(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, oauth_url=OAUTH_URL)
+    TSTART = datetime.datetime.today() - datetime.timedelta(days=2)
+    TEND = datetime.datetime.today() + datetime.timedelta(days=0)
+
+    r = get_prod(TSTART, TEND, production_type='SOLAR', type='ID')

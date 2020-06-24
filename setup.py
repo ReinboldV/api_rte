@@ -8,5 +8,5 @@ setup(
     author_email='vincent.reinbold@geeps.centralesupelec.fr',
     license='GNU GENERAL PUBLIC LICENSE v3',
     packages=['api_rte'],
-    classifiers=["Programming Language :: Python :: 3.7"], install_requires=['requests', 'urllib3']
+    classifiers=["Programming Language :: Python :: 3.7"], install_requires=['requests', 'urllib3', 'urllib', 'pandas']
 )
