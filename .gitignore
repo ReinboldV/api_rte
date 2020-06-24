@@ -1,1 +1,5 @@
 api_config.py
+__pycache__/
+.idea
+scripts/.ipynb_checkpoints/
+
