@@ -1,5 +1,5 @@
 import datetime
-
+from api_rte import json_to_pd_prod, json_to_pd_tempo, get_tempo_json, get_token, get_production_json
 """
 Script for RTE API data. 
 
@@ -24,7 +24,7 @@ i = 0
 
 while end_date <= TEND:
     # Requetes aux service tempo et prod + traitement
-    r_production = get_production(start_date, end_date, token_type, access_token)
+    r_production = get_production_json(start_date, end_date, token_type, access_token)
 
     # Mise sous pandas DataFrame des données json
     if i==0:
@@ -38,7 +38,7 @@ while end_date <= TEND:
     end_date   += datetime.timedelta(days=10)
 
 end_date      = TEND
-r_production  = get_production(start_date, end_date, token_type, access_token)
+r_production  = get_production_json(start_date, end_date, token_type, access_token)
 new_df        = json_to_pd_prod(r_production)
 df_production = df_production.append(new_df, verify_integrity=True).sort_index()
 
