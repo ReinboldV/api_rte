@@ -13,26 +13,25 @@ Procedure to follow:
         CLIENT_ID     = '7699170f-9898-40d0-b78a-XXXXXXXXXXXX'
         CLIENT_SECRET = '969de489-1dca-4158-8ad4-XXXXXXXXXXXX'
     
-3) Testing the configuration of the api
-
-    .. code-block: none
+3) Testing the configuration and the api :
     
-        python tests/test-api.py
+        python tests/test_conf.py
+        python tests/test_api.py
         
 4) Requesting data.
 
     For requesting data, one can rely on the documentation available for each API. See https://data.rte-france.com/catalog/-/api/user_guide/231845 for production for instance. 
     
-    This code already include routine method for downloading production and Tempo tarifs, respectively `get_tempo_json()` and `get_production_json()`.
+    This code already include routine method for downloading production and Tempo tarifs, respectively `get_tempo()` and `get_prod()`.
      
      Basically, those method make a get request to the server API, using client id and client secret code, passing parameter such as dates, production type, depending on the API (see documentation for each API to learn about parameters and formats). 
             
             start_date = datetime.datetime.today() - datetime.timedelta(days=2) # before yesterday
             end_date   = datetime.datetime.today() + datetime.timedelta(days=1) # tomorrow 
             
-            r_tempo = get_tempo_json(start_date, end_date, token_type, access_token)
+            r_tempo = get_tempo(start_date, end_date)
     
-    In this example, get_tempo_json() method returns data using json format, that can be parsed using the API documentation. See `update_rte_data.py` for example of use.  
+    In this example, get_tempo() method returns data using pandas DataFrame.
 
 5) Generation Forecast : https://data.rte-france.com/catalog/-/api/generation/Generation-Forecast/v2.0
 
