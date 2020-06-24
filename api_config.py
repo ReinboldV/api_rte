@@ -6,8 +6,8 @@ working directory are also case dependant.
 """
 
 # Client ID and secret code, you can get those at https://data.rte-france.com/
-CLIENT_ID       = '7699170f-9898-40d0-b78a-354bae1f36e6'
-CLIENT_SECRET   = '969de489-1dca-4158-8ad4-9e1ab405cfeb'
+CLIENT_ID       = '7699170f-9898-40d0-b78a-XXXXXXXX'
+CLIENT_SECRET   = '969de489-1dca-4158-8ad4-XXXXXXXX'
 
 # URL for authentication and get a token access :
 OAUTH_URL = 'https://digital.iservices.rte-france.com/token/oauth/'
