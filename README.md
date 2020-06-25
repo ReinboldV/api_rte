@@ -2,7 +2,11 @@
 
 Code source for downloading rte data using rte digital on-line services : https://data.rte-france.com/
 
-Procedure to follow:
+## Installation and configuration 
+
+1) Install the api_rte package from git :
+    
+    pip install git+https://github.com/ReinboldV/api_rte.git
 
 1) Create a profile at https://data.rte-france.com/.
     
@@ -17,23 +21,42 @@ Procedure to follow:
     
         python tests/test_conf.py
         python tests/test_api.py
+
+## Basic usage
         
-4) Requesting data.
-
-    For requesting data, one can rely on the documentation available for each API. See https://data.rte-france.com/catalog/-/api/user_guide/231845 for production for instance. 
-    
-    This code already include routine method for downloading production and Tempo tarifs, respectively `get_tempo()` and `get_prod()`.
+1) Requesting data tempo tarif and production forecasts
+  
+    This code includes methods for downloading production forecasts and Tempo tarifs, respectively `get_tempo()` and `get_prod()`.
      
-     Basically, those method make a get request to the server API, using client id and client secret code, passing parameter such as dates, production type, depending on the API (see documentation for each API to learn about parameters and formats). 
+     Basically, those method make a get request to the server API, using client id and client secret code, passing parameter such as dates, production type, and type of prediction,  depending on the API (see documentation for each API to learn about parameters and formats). 
+     
+     Here is a minimal example for tempo tarifs :
             
-            start_date = datetime.datetime.today() - datetime.timedelta(days=2) # before yesterday
-            end_date   = datetime.datetime.today() + datetime.timedelta(days=1) # tomorrow 
-            
-            r_tempo = get_tempo(start_date, end_date)
+        from api_rte import *
+        import datetime
+        
+        start_date = datetime.datetime.today() - datetime.timedelta(days=2) # before yesterday
+        end_date   = datetime.datetime.today() + datetime.timedelta(days=1) # tomorrow 
+        
+        r_tempo = get_tempo(start_date, end_date)
+        
+     Here is a minimal example for one day ahead wind production forecasts :
+     
+        from api_rte import *
+        import datetime
+        
+        start_date = datetime.datetime.today() - datetime.timedelta(days=2) # before yesterday
+        end_date   = datetime.datetime.today() + datetime.timedelta(days=1) # tomorrow 
+        
+        r_prod = get_prod(start_date, end_date, production_type='WIND', type='D-1')
+     
+     For more detail on options you can pass to the api or error explanation, one can rely on the documentation available for each API available in api_rte/docs or on https://data.rte-france.com/. 
     
-    In this example, get_tempo() method returns data using pandas DataFrame.
+## References 
+ 
+Generation Forecast documentation: https://data.rte-france.com/catalog/-/api/generation/Generation-Forecast/v2.0
 
-5) Generation Forecast : https://data.rte-france.com/catalog/-/api/generation/Generation-Forecast/v2.0
+Tempo like supply contract documentation: https://data.rte-france.com/catalog/-/api/doc/user-guide/Tempo+Like+Supply+Contract/1.1
 
-Consumption : https://data.rte-france.com/catalog/-/api/consumption/Consumption/v1.2
+Consumption documentation: https://data.rte-france.com/catalog/-/api/consumption/Consumption/v1.2
 
