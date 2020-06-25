@@ -6,7 +6,7 @@ Code source for downloading rte data using rte digital on-line services : https:
 
 1) Install the api_rte package from git :
     
-    pip install git+https://github.com/ReinboldV/api_rte.git
+        pip install git+https://github.com/ReinboldV/api_rte.git
 
 1) Create a profile at https://data.rte-france.com/.
     
@@ -28,7 +28,7 @@ Code source for downloading rte data using rte digital on-line services : https:
   
     This code includes methods for downloading production forecasts and Tempo tarifs, respectively `get_tempo()` and `get_prod()`.
      
-     Basically, those method make a get request to the server API, using client id and client secret code, passing parameter such as dates, production type, and type of prediction,  depending on the API (see documentation for each API to learn about parameters and formats). 
+     Basically, those methods make a GET request to the server API, using `CLIENT_ID` and `CLIENT_SECRET` code, passing parameter such as dates, production type, and type of prediction,  depending on the API (see documentation for each API to learn about parameters and formats). 
      
      Here is a minimal example for tempo tarifs :
             
