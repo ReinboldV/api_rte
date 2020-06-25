@@ -156,6 +156,7 @@ def _parse_json_values(values):
     df.index = pd.to_datetime(df.index, format='%Y-%m-%d %H:%M:%S', utc=True)
     df.updated_date = pd.to_datetime(df.updated_date, format='%Y-%m-%d %H:%M:%S', utc=True)
     df.end_date = pd.to_datetime(df.end_date, format='%Y-%m-%d %H:%M:%S', utc=True)
+    df.sort_index(inplace=True)
 
     return df
 
@@ -166,7 +167,7 @@ def json_to_pd_tempo(r_tempo):
     :param r_tempo:
     :return: pandas.DataFrame
     """
-    values_dict = r_tempo.json().get('tempo_like_calendars').get('values')
+    values_dict = r_tempo.get('tempo_like_calendars').get('values')
     df = _parse_json_values(values_dict)
     return df
 
