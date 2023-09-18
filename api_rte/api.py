@@ -2,7 +2,7 @@ import urllib
 import requests
 import pandas as pd
 
-from api_config import *
+from api_rte.config import *
 
 
 def get_token(oauth_url=OAUTH_URL,

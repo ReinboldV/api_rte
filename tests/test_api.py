@@ -1,6 +1,6 @@
 import unittest
-from api_config import *
-from api_rte import *
+from api_rte.config import *
+from api_rte.api import *
 import datetime
 
 

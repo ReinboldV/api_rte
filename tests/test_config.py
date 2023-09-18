@@ -1,5 +1,5 @@
 import unittest
-from api_config import *
+from api_rte.config import *
 
 
 class TestConfig(unittest.TestCase):

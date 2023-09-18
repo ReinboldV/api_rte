@@ -8,16 +8,16 @@ Code source for downloading rte data using rte digital on-line services : https:
     
         pip install git+https://github.com/ReinboldV/api_rte.git
 
-1) Create a profile at https://data.rte-france.com/.
+2) Create a profile at https://data.rte-france.com/.
     
-2) Create an application for web server and start associating API to this application. Note that you won't have access to API if note associated with you application. 
+3) Create an application for web server and start associating API to this application. Note that you won't have access to API if note associated with you application. 
         
-    In the application tab, one will find the `client id` and the related `client secret` code needed for requesting data. Add those to the configuration file `api_config.py`.
+    In the application tab, one will find the `client id` and the related `client secret` code needed for requesting data. Add those to the configuration file `api_rte\config.py`.
 
         CLIENT_ID     = '7699170f-9898-40d0-b78a-XXXXXXXXXXXX'
         CLIENT_SECRET = '969de489-1dca-4158-8ad4-XXXXXXXXXXXX'
     
-3) Testing the configuration and the api :
+4) Testing the configuration and the api :
     
         python tests/test_conf.py
         python tests/test_api.py
@@ -32,7 +32,7 @@ Code source for downloading rte data using rte digital on-line services : https:
      
      Here is a minimal example for tempo tarifs :
             
-        from api_rte import *
+        from api_rte.api import *
         import datetime
         
         start_date = datetime.datetime.today() - datetime.timedelta(days=2) # before yesterday
@@ -42,7 +42,7 @@ Code source for downloading rte data using rte digital on-line services : https:
         
      Here is a minimal example for one day ahead wind production forecasts :
      
-        from api_rte import *
+        from api_rte.api import *
         import datetime
         
         start_date = datetime.datetime.today() - datetime.timedelta(days=2) # before yesterday
